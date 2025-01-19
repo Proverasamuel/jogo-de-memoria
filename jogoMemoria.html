@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Memória</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #ffefd5;
+    }
+    h1 {
+      color: #ff4500;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 10px;
+      margin: 0 auto;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #ffa07a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      cursor: pointer;
+      border-radius: 12px;
+      user-select: none;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    .card.flipped {
+      background-color: #ffffff;
+      color: #ff4500;
+      cursor: default;
+      transform: rotateY(180deg);
+    }
+    .card.matched {
+      visibility: hidden;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #32cd32;
+      text-align: center;
+    }
+    .restart {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #ffa07a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .restart:hover {
+      background-color: #ff6347;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo da Memória</h1>
+  <div class="game-board" id="gameBoard"></div>
+  <div class="message" id="message"></div>
+  <button class="restart" id="restart">Reiniciar Jogo</button>
+
+  <script>
+    const cards = ["🍎", "🍌", "🍇", "🍓", "🍒", "🍍", "🍎", "🍌", "🍇", "🍓", "🍒", "🍍"];
+    const gameBoard = document.getElementById("gameBoard");
+    const message = document.getElementById("message");
+    const restartButton = document.getElementById("restart");
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matches = 0;
+
+    // Shuffle the cards
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Create the board
+    function createBoard() {
+      gameBoard.innerHTML = "";
+      const shuffledCards = shuffle([...cards]);
+      shuffledCards.forEach((symbol) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.symbol = symbol;
+        card.textContent = symbol; // Show symbols initially
+        gameBoard.appendChild(card);
+        setTimeout(() => {
+          card.textContent = ""; // Hide symbols after a delay
+        }, 3000);
+        card.addEventListener("click", flipCard);
+      });
+    }
+
+    // Flip the card
+    function flipCard() {
+      if (lockBoard || this === firstCard || this.classList.contains("flipped")) return;
+
+      this.classList.add("flipped");
+      this.textContent = this.dataset.symbol;
+
+      if (!firstCard) {
+        firstCard = this;
+      } else {
+        secondCard = this;
+        checkForMatch();
+      }
+    }
+
+    // Check if the two flipped cards match
+    function checkForMatch() {
+      if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+        firstCard.classList.add("matched");
+        secondCard.classList.add("matched");
+        resetTurn();
+        matches += 1;
+        if (matches === cards.length / 2) {
+          message.textContent = "Vitória! Você combinou todas as cartas!";
+        }
+      } else {
+        lockBoard = true;
+        setTimeout(() => {
+          firstCard.classList.remove("flipped");
+          secondCard.classList.remove("flipped");
+          firstCard.textContent = "";
+          secondCard.textContent = "";
+          resetTurn();
+        }, 1000);
+      }
+    }
+
+    // Reset the turn
+    function resetTurn() {
+      [firstCard, secondCard] = [null, null];
+      lockBoard = false;
+    }
+
+    // Restart the game
+    function restartGame() {
+      matches = 0;
+      message.textContent = "";
+      createBoard();
+    }
+
+    restartButton.addEventListener("click", restartGame);
+
+    // Initialize the game
+    createBoard();
+  </script>
+</body>
+</html>
