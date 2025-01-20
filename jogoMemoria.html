@@ -88,7 +88,7 @@
     let lockBoard = false;
     let matches = 0;
 
-    // Shuffle the cards
+    // Embaralhar as cartas
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -97,7 +97,7 @@
       return array;
     }
 
-    // Create the board
+    // Criar o quadro
     function createBoard() {
       gameBoard.innerHTML = "";
       const shuffledCards = shuffle([...cards]);
@@ -105,16 +105,16 @@
         const card = document.createElement("div");
         card.classList.add("card");
         card.dataset.symbol = symbol;
-        card.textContent = symbol; // Show symbols initially
+        card.textContent = symbol; // Mostrar símbolos inicialmente para memorizacao
         gameBoard.appendChild(card);
         setTimeout(() => {
-          card.textContent = ""; // Hide symbols after a delay
+          card.textContent = ""; // Ocultar símbolos após o tempo definido de 3 segundos
         }, 3000);
         card.addEventListener("click", flipCard);
       });
     }
 
-    // Flip the card
+    // Virar o cartão
     function flipCard() {
       if (lockBoard || this === firstCard || this.classList.contains("flipped")) return;
 
@@ -129,7 +129,7 @@
       }
     }
 
-    // Check if the two flipped cards match
+    // Verificar se as duas cartas viradas combinam
     function checkForMatch() {
       if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
         firstCard.classList.add("matched");
@@ -151,13 +151,13 @@
       }
     }
 
-    // Reset the turn
+    // Redefinir o turno 
     function resetTurn() {
       [firstCard, secondCard] = [null, null];
       lockBoard = false;
     }
 
-    // Restart the game
+    // Reiniciar o jogo
     function restartGame() {
       matches = 0;
       message.textContent = "";
@@ -166,7 +166,7 @@
 
     restartButton.addEventListener("click", restartGame);
 
-    // Initialize the game
+    // Inicializar o jogo
     createBoard();
   </script>
 </body>
